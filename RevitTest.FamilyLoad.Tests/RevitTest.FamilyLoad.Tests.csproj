@@ -91,6 +91,9 @@
     <None Update="Family\Family2025.rfa">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Family\Family2026.rfa">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Family\Project2019.rvt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
