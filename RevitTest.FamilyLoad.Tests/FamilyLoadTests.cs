@@ -124,6 +124,43 @@ namespace RevitTest.FamilyLoad.Tests
             }
         }
 
+        [Test]
+        [Order(7)]
+        public void RevitTests_OpenLoadFamily()
+        {
+            var familyPathTemp = Path.Combine(Path.GetTempPath(), Path.GetFileName(FamilyPath));
+            File.Copy(FamilyPath, familyPathTemp, true);
+            var family = FamilyUtils.OpenLoadFamily(document, familyPathTemp, (familyDocument) => {
+                using (Transaction transaction = new Transaction(familyDocument))
+                {
+                    transaction.Start("Change Family");
+
+                    var name = familyDocument.FamilyManager.CurrentType.Name;
+                    familyDocument.FamilyManager.RenameCurrentType(name + $" {DateTime.UtcNow.Ticks}");
+                    familyDocument.FamilyManager.RenameCurrentType(name);
+
+                    transaction.Commit();
+                }
+            });
+
+            using (Transaction transaction = new Transaction(document))
+            {
+                transaction.Start("LoadFamily");
+                if (family is null) Assert.Ignore("LoadFamily fail");
+
+                var familySymbols = FamilyUtils.SelectFamilySymbols(document, FamilyName);
+                foreach (var familySymbol in familySymbols)
+                {
+                    var parameterTypeComments = familySymbol.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_COMMENTS);
+                    var typeComments = parameterTypeComments.AsString();
+                    Console.WriteLine($"FamilySymbol: {familySymbol.Name}");
+                    Console.WriteLine($"Type Comments: {typeComments}");
+                }
+
+                transaction.Commit();
+            }
+        }
+
         public void ForceToReloadFamily()
         {
             Console.WriteLine(">> ForceToReloadFamily");

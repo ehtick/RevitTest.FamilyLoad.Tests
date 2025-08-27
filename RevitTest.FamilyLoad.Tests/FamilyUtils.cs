@@ -62,6 +62,22 @@ namespace RevitTest.FamilyLoad.Tests
             return family;
         }
 
+        public static Family OpenLoadFamily(Document document, string familyPath, Action<Document> familyDocumentAction = null, IFamilyLoadOptions familyLoadOptions = null)
+        {
+            familyLoadOptions ??= new OverwriteFamilyLoadOptions();
+            Family family = null;
+            using (Document familyDocument = document.Application.OpenDocumentFile(familyPath))
+            {
+                if (familyDocument.IsFamilyDocument)
+                {
+                    familyDocumentAction?.Invoke(familyDocument);
+                    family = familyDocument.LoadFamily(document, familyLoadOptions);
+                }
+                familyDocument.Close(false);
+            }
+            return family;
+        }
+
         private class OverwriteFamilyLoadOptions : IFamilyLoadOptions
         {
             public bool OnFamilyFound(bool familyInUse, out bool overwriteParameterValues)
