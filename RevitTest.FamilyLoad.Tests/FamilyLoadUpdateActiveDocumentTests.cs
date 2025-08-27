@@ -1,12 +1,29 @@
-﻿using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.ApplicationServices;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using NUnit.Framework;
 using System;
 using System.IO;
 
 namespace RevitTest.FamilyLoad.Tests
 {
-    public class FamilyLoadUpdateTests : Utils.OneTimeOpenDocumentTest
+    public class FamilyLoadUpdateActiveDocumentTests
     {
+        protected Document document;
+        protected Application application;
+        protected UIApplication uiapp;
+
+        protected virtual string FileName => null;
+
+        [OneTimeSetUp]
+        public void NewProjectDocument(UIApplication uiApplication)
+        {
+            this.uiapp = uiApplication;
+            this.application = uiapp.Application;
+            this.document = uiapp.ActiveUIDocument?.Document;
+            Assert.IsNotNull(document, "ActiveUIDocument is null");
+        }
+
         [TestCase("Family*")]
         public void RevitTests_LoadFamily(string familyName)
         {
